@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Bens </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+		.autocomplete {
+            width: 100%;
+            max-width: 300px;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .autocomplete-items div:hover {
+            background-color: #e9e9e9;
+        }
+
+        .autocomplete-active {
+            background-color: #007BFF !important;
+            color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        td input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+        }
+
+        td:first-child {
+            text-align: center;
+            font-weight: bold;
+        }
+		
+		.loading {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
+		
+		 .search-btn:hover {
+            background-color: #0056b3;
+        }
+		
+		.checkbox-group {
+            display: flex;
+            gap: 10px;
+        }
+        .observacao {
+            display: none;
+            margin-top: 5px;
+        }
+		
+		 #pdf-preview {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+            display: none; /* Inicialmente escondido */
+        }
+		
+    </style>
+</head>
+<body>
+
+<h1>Avaliação de Bens</h1>
+
+<div class="autocomplete">
+    <input id="myInput" type="text" placeholder="LOCAL">
+</div>
+
+<div class="sisgep">
+    <input id="sisgepInput" type="text" placeholder="SISGEP" class="autocomplete">
+</div>
+
+<button class="search-btn" onclick="searchData()">Buscar Dados</button>
+
+<button id="generate-pdf">Fazer PDF</button>
+<iframe id="pdf-preview" style="width:100%; height:500px; display:none;"></iframe>
+
+
+<!-- Indicador de carregamento -->
+<div id="loading" style="display: none;">Carregando...</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Chapa</th>
+            <th>Descrição</th>
+            <th>Setor</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="table-body">
+        <!-- Exemplo de linha com campos editáveis -->
+        <tr>
+            <td>1</td>
+            <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+            <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+            <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+            <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+            <td>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                    <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                    <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                </div>
+                <div class="observacao" style="display:none;">
+                    <label>Observação: <input type="text" class="observacao-input"></label>
+                </div>
+				
+            </td>
+			
+        </tr>
+		<tr>
+                <td>2</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>3</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			<tr>
+                <td>4</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>5</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>6</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>7</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>8</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>9</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>10</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>11</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>12</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>13</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>14</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>15</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>16</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>17</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>18</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>19</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>20</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>21</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>22</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>23</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>24</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>25</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>26</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>27</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>28</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>29</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+			
+			<tr>
+                <td>30</td>
+                <td><input type="text" placeholder="Chapa" class="chapa-input"></td>
+                <td><input type="text" placeholder="Descrição" class="descricao-input" readonly></td>
+                <td><input type="text" placeholder="Setor" class="setor-input" readonly></td>
+                <td><input type="text" placeholder="Status" class="status-input" readonly></td>
+                <td>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" class="recuperavel-checkbox"> Recuperável</label>
+                        <label><input type="checkbox" class="inservivel-checkbox"> Inservível</label>
+                        <label><input type="checkbox" class="nao-entregue-checkbox"> Não Entregue</label>
+                    </div>
+                    <div class="observacao">
+                        <label>Observação: <input type="text" class="observacao-input"></label>
+                    </div>
+                </td>
+            </tr>
+
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+
+    </tbody>
+</table>
+
+</body>
+</html>
+ <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzJmdiGLmzmaV1xhhjzq-UR5vdSrM2zlRG4qMkubTwrJzR8thrB9ERQAU8GKDLa1uBM/exec'); // Substitua pela URL do seu script Google Apps
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                return [];
+            }
+        }
+
+        function autocomplete(inp, arr) {
+            let currentFocus;
+            inp.addEventListener("input", function(e) {
+                let a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+
+                for (i = 0; i < arr.length; i++) {
+                    // Se o valor digitado for encontrado em qualquer parte do texto (não apenas no início)
+                    if (arr[i].toUpperCase().indexOf(val.toUpperCase()) !== -1) {
+                        b = document.createElement("DIV");
+                        const startIdx = arr[i].toUpperCase().indexOf(val.toUpperCase());
+                        b.innerHTML = arr[i].substring(0, startIdx) +
+                                      "<strong>" + arr[i].substring(startIdx, startIdx + val.length) + "</strong>" +
+                                      arr[i].substring(startIdx + val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                        b.addEventListener("click", function(e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function(e) {
+                let x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) {
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+
+            function removeActive(x) {
+                for (let i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+
+            function closeAllLists(elmnt) {
+                let x = document.getElementsByClassName("autocomplete-items");
+                for (let i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const data = await fetchData();
+            autocomplete(document.getElementById("myInput"), data);
+        });
+		
+		 document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('#table-body tr');
+            
+            rows.forEach(row => {
+                const recuperavelCheckbox = row.querySelector('.recuperavel-checkbox');
+                const inservivelCheckbox = row.querySelector('.inservivel-checkbox');
+                const naoEntregueCheckbox = row.querySelector('.nao-entregue-checkbox');
+                const observacaoDiv = row.querySelector('.observacao');
+                
+                if (recuperavelCheckbox && inservivelCheckbox && naoEntregueCheckbox && observacaoDiv) {
+                    [recuperavelCheckbox, inservivelCheckbox, naoEntregueCheckbox].forEach(checkbox => {
+                        checkbox.addEventListener('change', () => {
+                            if (recuperavelCheckbox.checked || inservivelCheckbox.checked || naoEntregueCheckbox.checked) {
+                                observacaoDiv.style.display = 'block';
+                            } else {
+                                observacaoDiv.style.display = 'none';
+                            }
+                        });
+                    });
+                }
+            });
+        });
+
+ 
+async function fetchChapaData(chapas) {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block';  // Exibe o indicador de carregamento
+
+    try {
+        // Enviar todos os chapas de uma vez
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbzFbuocAVtxvSa5uD6tUAh5hAow4DAbILedLYl0oWZa5PhD8RP72__YNqYVLbm_RYFz9w/exec?chapa=${encodeURIComponent(chapas.join(','))}`);
+        const data = await response.json();
+
+        console.log('Dados recebidos:', data); // Log para verificar os dados recebidos
+
+        if (Array.isArray(data)) {
+            // Criar um mapa dos dados recebidos para fácil acesso
+            const dataMap = data.reduce((map, item) => {
+                map[item.chapa] = item;
+                return map;
+            }, {});
+
+            document.querySelectorAll('#table-body tr').forEach(row => {
+                const chapaInput = row.querySelector('.chapa-input');
+                const chapa = chapaInput ? chapaInput.value.trim() : '';
+
+                // Encontrar o item correspondente no mapa de dados
+                const item = dataMap[chapa];
+
+                // Atualizar os valores na linha correspondente
+                if (item) {
+                    row.querySelector('.descricao-input').value = item.descricao || 'N/A';
+                    row.querySelector('.setor-input').value = item.setor || 'N/A';
+                    row.querySelector('.status-input').value = item.status || 'N/A';
+                } else {
+                    row.querySelector('.descricao-input').value = 'N/A';
+                    row.querySelector('.setor-input').value = 'N/A';
+                    row.querySelector('.status-input').value = 'N/A';
+                }
+            });
+        } else {
+            console.error('A resposta da API não é um array:', data);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+    } finally {
+        loadingIndicator.style.display = 'none';  // Esconde o indicador de carregamento
+    }
+}
+
+function searchData() {
+    const rows = document.querySelectorAll('#table-body tr');
+    const chapas = [];
+
+    rows.forEach(row => {
+        const chapaInput = row.querySelector('.chapa-input');
+        const chapa = chapaInput ? chapaInput.value.trim() : '';
+        if (chapa) {
+            chapas.push(chapa);
+        }
+    });
+
+    if (chapas.length > 0) {
+        fetchChapaData(chapas);
+    } else {
+        console.error("Nenhuma chapa válida foi inserida.");
+    }
+}
+
+
+
+document.getElementById('generate-pdf').addEventListener('click', function() {
+    generatePDF();
+});
+
+async function generatePDF() {
+    const rows = document.querySelectorAll('#table-body tr');
+    const chapasData = [];
+
+    rows.forEach(row => {
+        const chapaInput = row.querySelector('.chapa-input');
+        const descricaoInput = row.querySelector('.descricao-input');
+        const observacaoInput = row.querySelector('.observacao-input');
+        const recuperavelCheckbox = row.querySelector('.recuperavel-checkbox');
+        const inservivelCheckbox = row.querySelector('.inservivel-checkbox');
+        const naoEntregueCheckbox = row.querySelector('.nao-entregue-checkbox');
+
+        const chapa = chapaInput ? chapaInput.value.trim() : '';
+        const descricao = descricaoInput ? descricaoInput.value.trim() : '';
+        const observacao = observacaoInput ? observacaoInput.value.trim() : '';
+
+        let acaoSelecionada = '';
+        if (recuperavelCheckbox.checked) acaoSelecionada = 'Recuperável';
+        if (inservivelCheckbox.checked) acaoSelecionada = 'Inservível';
+        if (naoEntregueCheckbox.checked) acaoSelecionada = 'Não Entregue';
+
+        if (chapa) {
+            chapasData.push({
+                chapa: chapa,
+                descricao: descricao,
+                acaoSelecionada: acaoSelecionada,
+                observacao: observacao
+            });
+        }
+    });
+
+    if (chapasData.length > 0) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // URL das imagens (cabeçalho e rodapé)
+        const headerImageURL = 'https://i.postimg.cc/7LjNtYcS/cabe-alho.jpg';
+        const footerImageURL = 'https://i.postimg.cc/13j043yb/rodap.jpg';
+
+        // Adicionar imagem de cabeçalho
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        // Ajuste de altura e largura do cabeçalho
+        const headerHeight = 15;  // Altura do cabeçalho
+        doc.addImage(headerImageURL, 'JPEG', 0, 0, pageWidth, headerHeight); // Adiciona o cabeçalho
+
+        // Adicionar título ao PDF (abaixo da imagem do cabeçalho)
+        doc.setFontSize(18);
+        doc.text('Avaliação de Bens', 14, headerHeight + 25); // 25 é o espaçamento após o cabeçalho
+
+        // Adicionar Local e SISGEP em destaque
+        const local = document.getElementById('myInput').value.trim();
+        const sisgep = document.getElementById('sisgepInput').value.trim();
+
+        if (local) {
+            doc.setFontSize(14);
+            doc.text(`Local: ${local}`, 14, headerHeight + 33);
+        }
+
+        if (sisgep) {
+            doc.setFontSize(14);
+            doc.text(`SISGEP: ${sisgep}`, 14, headerHeight + 41);
+        }
+
+        // Adicionar tabela ao PDF
+        doc.autoTable({
+            head: [['Chapa', 'Descrição', 'Ações', 'Observação']],
+            body: chapasData.map(item => [item.chapa, item.descricao, item.acaoSelecionada, item.observacao]),
+            startY: headerHeight + 50,  // Abaixo das informações do Local e SISGEP
+            theme: 'striped',
+            headStyles: { fillColor: [0, 0, 255] },  // Cor de fundo dos cabeçalhos
+            columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 40 }, 2: { cellWidth: 35 }, 3: { cellWidth: 50 } },
+            styles: {
+                overflow: 'linebreak',
+                cellPadding: 2,
+                fontSize: 10
+            }
+        });
+
+        // Ajuste de altura e largura do rodapé
+        const footerHeight = 15;  // Altura do rodapé
+
+        // Adicionar imagem de rodapé (ajustável)
+        const footerPositionY = pageHeight - footerHeight;  // Posição Y do rodapé
+        doc.addImage(footerImageURL, 'JPEG', 0, footerPositionY, pageWidth, footerHeight); // Adiciona o rodapé
+
+        // Visualizar o PDF antes de baixar
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const iframe = document.getElementById('pdf-preview');
+        iframe.src = pdfUrl;
+        iframe.style.display = 'block';  // Exibe o PDF na tela
+
+        // Para baixar o PDF, você pode adicionar um botão de download
+        // doc.save('relatorio_chapas.pdf');
+    } else {
+        console.error('Nenhuma chapa foi preenchida.');
+    }
+}
+
+
+
+
+
+    </script>
+
+
+</body>
+</html>
