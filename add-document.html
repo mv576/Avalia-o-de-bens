@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Documentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        #loading {
+            display: none; /* Escondido inicialmente */
+            font-size: 20px;
+            color: blue;
+        }
+        .document-item {
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .document-item p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Adicionar Documentos</h1>
+    <button id="fetch-data-btn">Buscar Documentos</button>
+    <p id="loading">Carregando...</p>
+	    <div id="results"></div>
+
+    <script>
+     document.getElementById('fetch-data-btn').addEventListener('click', async function() {
+    const loading = document.getElementById('loading');
+    const resultsDiv = document.getElementById('results');
+    
+    // Mostrar o texto "Carregando..."
+    loading.style.display = 'block';
+    resultsDiv.innerHTML = ''; // Limpar resultados anteriores
+
+    try {
+        // Fazer a requisição para buscar os dados
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxgdcFDEbzPwjPKOET6dQF4vY5-c2m58rXM5Sx2AI8lh4PXbaR57TltK2DEa3P10BkA/exec');
+        const data = await response.json();
+
+        // Exibir os dados
+       data.forEach((doc, index) => {
+    resultsDiv.innerHTML += `
+        <div class="document-item">
+            <p><strong>Data de lançamento:</strong> ${doc.colunaA}</p>
+            <p><strong>Data do documento:</strong> ${doc.colunaB}</p>
+            <p><strong>Local:</strong> ${doc.colunaC}</p>
+            <p><strong>Tipo de arquivo:</strong> ${doc.colunaD}</p>
+            <p><strong>Numero do documento:</strong> ${doc.colunaE}</p>
+            <p><strong>Tipo do documento:</strong> ${doc.colunaF}</p>
+
+            <!-- Campo para inserção e botão de envio -->
+            <label for="input-${index}">Adicionar Documento:</label>
+            <input type="text" id="input-${index}" placeholder="Digite o valor...">
+            <button onclick="sendToColumnK(${doc.colunaE}, ${index})">Enviar</button>
+
+            <!-- Status de gravação dos dados -->
+            <p id="status-${index}" style="color: blue;"></p>
+        </div>
+    `;
+});
+
+    } catch (error) {
+        resultsDiv.innerHTML = '<p>Erro ao carregar os dados.</p>';
+        console.error('Erro:', error);
+    } finally {
+        // Esconder o texto "Carregando..." após os dados serem carregados
+        loading.style.display = 'none';
+    }
+});
+
+async function sendToColumnK(documentNumber, index) {
+    const inputField = document.getElementById(`input-${index}`);
+    const newValue = inputField.value;
+    const statusField = document.getElementById(`status-${index}`);
+
+    if (!newValue) {
+        alert("Por favor, insira um valor.");
+        return;
+    }
+
+    try {
+        // Exibe a mensagem de "Gravando os dados..." antes de enviar
+        statusField.innerHTML = "Gravando os dados...";
+
+        // Prepara os parâmetros para o POST
+        const params = new URLSearchParams();
+        params.append('documentNumber', documentNumber);  // Número do documento (coluna A)
+        params.append('newValue', newValue);  // Valor inserido (coluna B)
+
+        // Envia a requisição POST para o Google Apps Script
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzZDMHyfusOnY5eUxj1wqID2tZKSYi3huckBh2Ayjy65XDdW4CDIW5B7Iu_pkenYNRmGg/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),  // Envia os parâmetros
+        });
+
+        const result = await response.text();
+
+        // Após a conclusão, exibe o resultado e limpa o status
+        statusField.innerHTML = "Dados gravados com sucesso!";
+        alert(result);  // Exibe a resposta da atualização
+
+    } catch (error) {
+        console.error('Erro ao enviar os dados:', error);
+        statusField.innerHTML = "Erro ao gravar os dados.";
+        alert('Erro ao enviar os dados.');
+    } finally {
+        // Remove a mensagem após 2 segundos
+        setTimeout(() => {
+            statusField.innerHTML = "";
+        }, 2000);
+    }
+}
+
+
+
+
+
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca de Documentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .navbar {
+            background-color: #0033a0;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+        }
+
+        .navbar-left, .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-left h1 {
+            margin-right: 20px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+       .navbar-right a {
+    margin-left: 15px; /* Ajuste o valor para mais ou menos espaço */
+}
+
+        .random-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .menu {
+            background-color: #fff;
+            padding: 10px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 3px solid #ff0000;
+        }
+
+        .menu-item {
+            color: #0033a0;
+            font-weight: 500;
+            margin-right: 20px;
+        }
+
+        .search-area {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-area h2 {
+            color: #0033a0;
+            margin-bottom: 20px;
+        }
+
+        .search-area select, .search-area input {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .search-area button {
+            padding: 10px 20px;
+            background-color: #0033a0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .search-area button:hover {
+            background-color: #ff0000;
+        }
+
+        .results-area {
+            margin-top: 20px;
+        }
+
+        .results-area h3 {
+            color: #0033a0;
+        }
+
+        .document-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .document-item p {
+            margin: 5px 0;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .document-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+
+        /* Estilos para a engrenagem de carregamento */
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+            display: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <h1>Documentos</h1>
+    </div>
+    <div class="navbar-right">
+        <i></i>
+        <i></i>
+        <i></i>
+        <a href="random.html" class="random-btn">Gerar Número Aleatório</a>
+		 <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLscFD88MZ7GB21S4XP3bhSRdzH9s3Pa8MNSSnTXP4-FRnYg/viewform" class="random-btn" target="_blank">Preencher Formulário</a>
+		  <a href="add-document.html" class="random-btn">Adicionar Documentos</a>
+    </div>
+</div>
+
+<div class="search-area">
+    <h2>Procura de Documentos</h2>
+    
+    <label for="Documento">Número do Documento:</label>
+    <textarea id="Documento" placeholder="Digite Número aqui..."></textarea>
+    
+    <label for="year">Ano:</label>
+    <select id="year">
+        <option value="">Selecione o ano</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select>
+
+    <label for="sector">Setor:</label>
+    <select id="sector">
+        <option value="">Selecione o setor</option>
+		  <!-- Adicione opções do setor aqui -->
+    </select>
+
+    <label for="document-type">Finalidade:</label>
+    <select id="document-type">
+        <option value="">Selecione o tipo</option>
+        <option value="relatorio">TRANSFERÊNCIA DE BENS</option>
+        <option value="contrato">AVALIAÇÃO DE BENS</option>
+        <option value="TERMO DE DOAÇÃ">TERMO DE DOAÇÃO</option>
+        <option value="NOTA FISCAL">NOTA FISCAL</option>
+        <option value="DIVERSOS">DIVERSOS</option>
+        <option value="TROCA DE RESPONSABILIDADE">TROCA DE RESPONSABILIDADE</option>
+        <option value="INSTAURAÇÃO DE SINDICANCIA">INSTAURAÇÃO DE SINDICANCIA</option>
+        <option value="NOTIFICAÇÃO DE ATRASO DE INVENTÁRIO">NOTIFICAÇÃO DE ATRASO DE INVENTÁRIO</option>
+    </select>
+    
+    <div id="results"></div>
+
+    <!-- Engrenagem de carregamento (inicialmente oculta) -->
+    <div id="loading" style="display: none;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/de/Ajax-loader.gif" alt="Carregando..." />
+    </div>
+
+    <!-- Div para escurecer o fundo (inicialmente oculta) -->
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;"></div>
+
+    <button id="search-btn">Buscar Documentos</button>
+</div>
+
+<script src="script.js"></script> <!-- Inclua o seu script JavaScript aqui -->
+
+</body>
+</html>
+
+
+<script>
+document.getElementById('search-btn').addEventListener('click', async function() {
+    const year = document.getElementById('year').value;
+    const sector = document.getElementById('sector').value;
+    const numeroDocumento = document.getElementById('Documento').value;
+    const finalidade = document.getElementById('document-type').value; // Finalidade do documento
+    const resultsDiv = document.getElementById('results');
+    const loadingDiv = document.getElementById('loading');
+    const overlay = document.getElementById('overlay');
+
+    // Limpa os resultados anteriores
+    resultsDiv.innerHTML = '';
+
+    // Exibe o indicador de carregamento
+    loadingDiv.style.display = 'block';
+    overlay.style.display = 'block';
+
+    // Verifica se algum campo foi preenchido
+    if (numeroDocumento || (year && sector) || finalidade) {
+        let url = `https://script.google.com/macros/s/AKfycbx_9WDsbHaHvwb-MH0xNkpdt2lp9ZsnC08ExR_-7W0ghvqdCQSZH3jPqb2ZYwigJNV4/exec?`;
+        if (numeroDocumento) {
+            url += `numeroDocumento=${numeroDocumento}`;
+        } else {
+            url += `ano=${year}&setor=${sector}&finalidade=${finalidade}`;
+        }
+
+        // Faz a requisição à API
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            // Exibe os resultados
+            data.forEach(doc => {
+                const dataDocumento = new Date(doc.dataDocumento).toLocaleDateString();
+                resultsDiv.innerHTML += `
+                    <div class="document-item">
+                        <p><strong>Número do Documento:</strong> ${doc.numeroDocumento}</p>
+                        <p><strong>Link:</strong> <a href="${doc.linkDocumento}" target="_blank">Abrir Documento</a></p>
+                        <p><strong>Setor:</strong> ${doc.setor}</p>
+                        <p><strong>Data do Documento:</strong> ${dataDocumento}</p>
+                        <p><strong>Finalidade:</strong> ${doc.finalidade}</p>
+                        <p><strong>Caixa Digitalizadora:</strong> ${doc.caixaDigitalizadora}</p>
+                        <p><strong>Quantidade de Folhas:</strong> ${doc.quantidadeFolhas}</p>
+                        <hr>
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            resultsDiv.innerHTML = '<p>Erro ao buscar os documentos. Tente novamente.</p>';
+        } finally {
+            // Oculta o indicador de carregamento
+            loadingDiv.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+    } else {
+        resultsDiv.innerHTML = '<p>Por favor, insira o número do documento ou selecione o ano, setor e finalidade.</p>';
+        loadingDiv.style.display = 'none';
+        overlay.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const setores = [
+        '10 - CASA CIVIL - 2ª CIA DA POLICIA MILITAR', '104 - EDUCAÇÃO - COLÉGIO MARIA APPARECIDA DE MIRANDA', '105 - SEG. URBANA - GCM - PG 18 DO FORTE - ALPHAVILLE', '106 - SEMEDES - BANCO DO POVO / SEBRAE', '109 - CULTURA - CCAM - FAZENDINHA', '11 - SECOM - SECRETARIA', '110 - EDUCAÇÃO - COLÉGIO EMILIA GIL DA ASSUNÇÃO', '112 - EDUCAÇÃO - COLÉGIO PAPA JOAO PAULO II', '116 - SEG. URBANA - GCM - ALMOXARIFADO QUARTEL', '121 - ESPORTE - ESTADIO MUNICIPAL - PREF GABRIEL MARQUES DA SILVA', '123 - CASA CIVIL - GABINETE DO PREFEITO', '126 - DESENVOLVIMENTO SOCIAL  -  CREAS', '128 - HABITAÇÃO - SECRETARIA', '13 - ADMINISTRAÇÃO - SECRETARIA', '133 - CULTURA - CEMIC (CASA 49)', '135 - SAÚDE - AME (AMBULATORIO MÉDICO DE ESPECIALIDADES)', '139 - CULTURA - CINE TEATRO CORONEL RAIMUNDO', '14 - DESENVOLVIMENTO SOCIAL - NAS COLINAS DA ANHANGUERA', '140 - EDUCAÇÃO - COLÉGIO HORTENCIA ALVES DOS SANTOS', '142 - CASA CIVIL - OUVIDORIA', '143 - SAÚDE - USA CIDADE SÃO PEDRO', '144 - SAÚDE - USA PARQUE SANTANA', '145 - EDUCAÇÃO - COLÉGIO CARLOS DRUMMOND DE ANDRADE', '146 - EDUCAÇÃO - COLÉGIO DR. ÁLVARO RIBEIRO', '147 - EDUCAÇÃO - COLÉGIO JUSCELINO KUBITSCHEK', '150 - EDUCAÇÃO - COLÉGIO PROF. BENEDITA ODETTE M. SAVOIA', '151 - EDUCAÇÃO - COLÉGIO ANDRE FERNANDES', '154 - EDUCAÇÃO - COLÉGIO DAISY MORAES', '155 - ESPORTE - CENTRO DE LUTAS (COLINAS)', '156 - EDUCAÇÃO - COLÉGIO MANOEL JACOB CREMM', '157 - DESENVOLVIMENTO SOCIAL  -  NAS VILA POUPANÇA / ITAPUÃ', '158 - EDUCAÇÃO - COLÉGIO CELINA DA COSTA MACHADO SILVA', '163 - EDUCAÇÃO - COLÉGIO ALBA BONILHA', '165 - FUNDO SOCIAL - BAZAR DA SOLIDARIEDADE', '166 - ESPORTE - PARQUE MUNICIPAL TIBIRIÇÁ (120)', '168 - SEG. URBANA - DEPARTAMENTO ADMINISTRATIVO', '169 - EDUCAÇÃO - MERENDA BENS AGUARDO', '17 - ADMINISTRAÇÃO - DEPARTAMENTO DE TRANSPORTE', '172 - CASA CIVIL - POSTO PREV. SOCIAL (INSS SANTANA DE PARNAIBA)', '173 - SAÚDE - CENTRO DE SAÚDE DA MULHER PARNAIBANA', '174 - ESPORTE - CAMPO COLINAS DA ANHANGUERA', '177 - EDUCAÇÃO - COLÉGIO ADRIANO TEIXEIRA DE SANTANA', '178 - EDUCAÇÃO - COLÉGIO MARIA CLARA MACHADO', '18 - SMTI - MANUTENÇÃO', '180 - SERVIÇOS MUNICIPAIS - VELORIO', '181 - SERVIÇOS MUNICIPAIS - ALMOXARIFADO', '185 - EDUCAÇÃO - COLÉGIO CORA CORALINA', '189 - SAÚDE - SEDES', '19 - ESPORTE - UNIDADE PARQUE SANTANA', '192 - DESENVOLVIMENTO SOCIAL  -  CRAS CENTRO', '194 - ADMINISTRAÇÃO - DEPARTAMENTO DE GESTÃO DE SUPRIMENTOS', '198 - SAÚDE - VIGILANCIA EPIDEMIOLOGICA', '2 - CASA CIVIL - EXPEDIENTE/PROTOCOLO', '201 - EDUCAÇÃO - COLÉGIO PROFª. RICARDA', '202 - EDUCAÇÃO - COLÉGIO PREF. JOÃO JOSÉ', '203 - EDUCAÇÃO - COLÉGIO HOLMES VILLAR', '205 - EDUCAÇÃO - COLÉGIO ABELARDO MARQUES', '206 - EDUCAÇÃO - COLÉGIO LEDA CAIRA', '208 - EDUCAÇÃO - COLÉGIO RUTH AZEVEDO', '209 - EDUCAÇÃO - COLÉGIO BERNARDINO', '210 - EDUCAÇÃO - COLÉGIO ED. PAULO FREIRE', '211 - SEMEDES - PAT / PROCON CENTRO', '212 - EDUCAÇÃO - COLÉGIO IMIDEO NERICI', '213 - EDUCAÇÃO - COLÉGIO MAGIA DAS CORES', '214 - EDUCAÇÃO - CARROSEL DOURADO', '216 - EDUCAÇÃO - COLÉGIO ALDONIO RAMOS TEIXEIRA', '217 - EDUCAÇÃO - COLÉGIO JARDIM SÃO LUIZ', '218 - SEG. URBANA - GCM - PG COLINAS DA ANHANGUERA', '219 - SEG. URBANA - GCM - PG ALPHA (RES. 11 E 12)', '22 - CULTURA - SECRETARIA', '222 - DESENVOLVIMENTO SOCIAL  -  CONSELHO TUTELAR', '224 - CULTURA - OFICINA ARTISTICA CULTURAL', '225 - EDUCAÇÃO - COLÉGIO MARIO COVAS', '226 - EDUCAÇÃO - COLÉGIO PAULO OTAVIO BOTELHO', '227 - EDUCAÇÃO - COLÉGIO VER. REINALDO SANTOS', '229 - EDUCAÇÃO - COLÉGIO ANA APARECIDA STNA', '23 - CULTURA - MUSEU / CASARÃO MONSENHOR', '231 - EDUCAÇÃO - COLÉGIO CARLOS ALBERTO SIQUEIRA', '232 - EDUCAÇÃO - COLÉGIO TOM JOBIM', '233 - EDUCAÇÃO - COLÉGIO ZILDA ARNS', '237 - SMTI - SECRETARIA', '238 - EDUCAÇÃO - COLÉGIO MONTEIRO LOBATO', '239 - EDUCAÇÃO - COLÉGIO NORBERTO REGINALDO ROCHA', '24 - CULTURA - BIBLIOTECA ANTONIO BRANCO  (CENTRAL)', '240 - EDUCAÇÃO - COLÉGIO HELENA CHAVES', '241 - FINANÇAS - IPTU COLINAS DO ANHANGUERA', '243 - CULTURA - BIBLIOTECA CECILIA MEIRELES', '247 - SEG. URBANA - GCM - SETOR AMBIENTAL', '248 - SAÚDE - RESGATE (BASE OPERACIONAL)', '249 - CASA CIVIL - SETOR IDENTIFICACAO', '25-  CULTURA - C.C.A.M (CENTRO CULTURAL ARTISTICO MUNICIPAL) CENTRO', '252 - TRANSPORTE E TRÂNSITO - SECRETARIA', '253 - CULTURA - C.A.A (CENTRO DE APOIO AO ARTESÃO)', '254 - DESENVOLVIMENTO SOCIAL  -  CRAS CIDADE SÃO PEDRO', '26 - NEGÓCIOS JURÍDICOS - SECRETARIA', '262 - EDUCAÇÃO - COLÉGIO ANDRE FRANCO MONTORO', '263 - EDUCAÇÃO - COLÉGIO TANCREDO NEVES', '264 - EDUCAÇÃO - NUCLÉO DE PESSOAS COM DEFICIÊNCIA', '267 - ESPORTE - PRAÇA PARQUE COLINAS', '268 - DESENVOLVIMENTO SOCIAL - FUNDO SOCIAL', '269 - CASA CIVIL - DELEGACIA DE POLÍCIA CIVIL', '27 - OBRAS - SECRETARIA', '28 - SECRETARIA DE COMPRAS E LICITAÇÕES', '280 - DESENVOLVIMENTO SOCIAL  -  CRAS CURURUQUARA', '281 - SEG. URBANA - GCM - PG SÃO PEDRO', '282 - ADMINISTRAÇÃO - DIVISÃO DE ARQUIVO MUNICIPAL', '284 - EDUCAÇÃO - COLÉGIO MARIA IZABEL FERNANDES BARBOZA', '285 - SAÚDE - SAD (SERVIÇO DE ATENDIMENTO DOMICILIAR)', '29 - OPERAÇÕES URBANAS - ALPHAVILLE-TAMBORÉ - OPERACIONAL', '290 - SAÚDE - CAPS TRAVESSIA (ALCOOL E DROGA)', '291 - SAÚDE - UBS CURURUQUARA', '293 - SAÚDE - CAPS ADULTO ALVORECER', '30 - OPERAÇÕES URBANAS - FAZENDINHA', '302 - ADMINISTRAÇÃO - DEP. DE MEDICINA E SEGURANÇA DO TRABALHO', '304 - DESENVOLVIMENTO SOCIAL  -  ALMOXARIFADO', '307 - SAÚDE - USA FAZENDINHA', '31 - FINANÇAS - SECRETARIA', '310 - ESPORTE - CAMPO JD. ISAURA', '311 - ESPORTE - UNIDADE JARDIM ISAURA', '315 - FINANÇAS - IPTU CIDADE SÃO PEDRO', '320 - SEG. URBANA - GCM - PG TAMBORÉ', '324 - SEMEDES - ETEC ANHANGUERA (FAZENDINHA)', '326 - SEG. URBANA - GCM - ARMARIA', '327 - CASA CIVIL - DELEGACIA DA MULHER', '339 - EDUCAÇÃO - COLÉGIO JOÃO DE BARRO', '345 - SEG. URBANA - GCM - PG TENENTE MARQUES', '347 - SEG. URBANA - COORDENADORIA DE DEFESA CIVIL', '348 - EDUCAÇÃO - COLÉGIO SENADOR TEOTÔNIO VILÉLA', '35 - MEIO AMBIENTE E PLANEJAMENTO - SECRETARIA', '356 - SEMEDES - PROCON (ALPHAVILLE)', '36 - SAÚDE - ZOONOSES', '38 - SAÚDE - SECRETARIA', '39 - SAÚDE - UBS ALVARO RIBEIRO', '4 - SMTI - TELEFONIA', '40 - SAÚDE - PAM SANTA ANA', '417 - SEG. URBANA - GCM - INSPETORIA OPERACIONAL PARQUE SANTANA', '44 - SAÚDE - UBS COLINAS DA ANHANGUERA', '443 - SAÚDE - REGULAÇÃO AMBULATORIAL', '445 - SEMEDES - PAT CIDADE SÃO PEDRO', '446 - SEMEDES - PAT COLINAS DA ANHANGUERA', '449 - CASA CIVIL - VICE PREFEITA', '45 - SAÚDE - VIGILANCIA SANITARIA', '450 - SEG. URBANA - GCM - A.I', '451 - SEG. URBANA - GCM - PROSSEGUE', '452 - SEG. URBANA - GCM - GTM', '454 - SEG. URBANA - GCM - ADMINISTRAÇÃO', '46 - SAÚDE - CAPS INFANTIL', '462 - SAÚDE - ESCOLAR', '465 - SERVIÇOS MUNICIPAIS - CEMITÉRIO', '466 - SEG. URBANA - CORPO DE BOMBEIROS', '467 - EDUCAÇÃO - COLÉGIO LUIZ CARLOS BARBOSA', '47 - EDUCAÇÃO - SECRETARIA', '470 - CULTURA - DIR. MEMÓRIA E PATRI. CULTURAL E NATURAL (CASA 80)', '471 - CULTURA - ESTAÇÃO CIDADANIA', '472 - CULTURA - ARENA DE EVENTOS', '474 - SERVIÇOS MUNICIPAIS - RODOVIARIA', '475 - ASSUNTOS ESTRATÉGICOS - SECRETARIA', '476 - SAÚDE - UBS INGAÍ', '480 - SAÚDE - UPA FAZENDINHA', '481 - SAÚDE - UBS ALPHAVILLE', '49 - EDUCAÇÃO - COLÉGIO PINGO DE GENTE', '490 - ESPORTE - PRAÇA BAIRRO 120', '493 - EDUCAÇÃO - COLÉGIO JOSÉ SOARES DOS SANTOS', '51 - EDUCAÇÃO - COLÉGIO BALAO MAGICO', '519 - SMTI - SECRETARIA (NÃO LOCALIZADO)', '52 - EDUCAÇÃO - COLÉGIO SETE ANOES', '532 - SEMEDES - UNIVESP', '533 - MEIO AMBIENTE E PLANEJAMENTO - UBS ANIMAL', '534 - SEC DA MULHER E DA FAMILIA - SECRETARIA DA MULHER', '536 - EDUCAÇÃO - COLÉGIO ANA SERRA DE FREITAS', '537 - SEMEDES - CENTRO DE QUALIFICAÇÃO PROFISSIONAL - SÃO PEDRO', '538 - MEIO AMBIENTE E PLANEJAMENTO - VIVEIRO', '54 - DESENVOLVIMENTO SOCIAL  -  SECRETARIA', '540 - CASA CIVIL - DIP / SETOR DE ILUMINAÇÃO PUBLICA', '541 - SAÚDE - NUPAV (CENTRO DE PREVENÇÃO E ATENÇÃO A VIOLÊNCIA)', '542 - ESPORTE - PARQUE SÃO PEDRO', '543 - CULTURA - PONTO DE LEITURA', '544 - CASA CIVIL - HOMOLOGAÇÃO', '545 - MEIO AMBIENTE E PLANEJAMENTO - ECOVAN AMBIENTAL', '547 - SEG. URBANA - SETOR DE VIGIAS', '548 - SEG. URBANA - CORREGEDORIA - CAB', '55 - DESENVOLVIMENTO SOCIAL  -  CRAS CASA DA FAMÍLIA (JD. ISAURA)', '553 - ADMINISTRAÇÃO - DEPARTAMENTO DE GESTÃO DE PATRIMÔNIO', '56 - DESENVOLVIMENTO SOCIAL  -  CRAS FAZENDINHA', '564 - SEMEDES - ESPAÇO EMPRESÁRIO EMPREENDEDOR - ALPHAVILLE', '568 - CASA CIVIL - FÓRUM DE SANTANA DE PARNAIBA', '57 - SAÚDE - ALMOXARIFADO', '571 - CULTURA - CAT (CENTRO DE ATENDIMENTO AO TURISTA)', '572 - ESPORTE - PARQUE SÃO LUIS', '577 - SAÚDE - FARMÁCIA - COLINAS ANHANGUERA', '579 - SEG. URBANA - GCM - INSPETORIA OPERACIONAL FAZENDINHA', '58 - EDUCAÇÃO - COLÉGIO CURUMIM I', '580 - ESPORTE - CENTRO DE INICIAÇÃO AO ESPORTE (CIE)', '581 - ESPORTE - CAMPO CID. SÃO PEDRO', '582 - ESPORTE - QUADRA SINTETICA DO PQ DOS EUCALIPTOS', '585 - EDUCAÇÃO - COLÉGIO GEORGINA DE ANDRADE NADALINI', '588 - SEG. URBANA - CCO (CENTRO DE CONTROLE OPERACIONAL)', '589 - SEG. URBANA - GUARDA MIRIM', '59 - EDUCAÇÃO - COLÉGIO MONTANHA ENCANTADA', '590 - SAÚDE - PRONTO SOCORRO INFANTIL', '591 - EDUCAÇÃO - PADRE GREGOR KARL LUTZ', '593 - SAÚDE - UBS CHÁCARA DAS GARÇAS', '594 - SAÚDE - UBS SITIO DO MORRO', '595 - SAÚDE - UBS DIEGO DE LIMA CAMILO (REFUGIO)', '596 - EDUCAÇÃO - MANUTENÇÃO ESCOLAR', '597 - SEG. URBANA - GCM - IAET (INSP. AÇÕES ESTRATÉGICA E TÁTICAS)', '599 - CASA CIVIL - ASSESSORIA DE APOIO À DECISÃO', '6 - CASA CIVIL - JUNTA MILITAR', '600 - CASA CIVIL - CARTÓRIO ELEITORAL', '601 - ESPORTE - PARQUE DO JAGUARI', '602 - SEMEDES - FATEC FAZENDINHA', '604 - SAÚDE - SAMU', '605- SEG. URBANA - DEPTO DE LICITAÇÃO, CONTRATOS E CONVÊNIOS', '606 - SEG. URBANA - DEPTO DE PLANEJAMENTO E GESTÃO ESTRATÉGICA', '607 - EDUCAÇÃO - COLÉGIO SR GABRIELE D ALESSANDRO', '608 - EDUCAÇÃO - COLÉGIO CHÁCARA DAS GARÇAS', '609 - EDUCAÇÃO - COLÉGIO CRISTAL PARK', '61 - EDUCAÇÃO - COLÉGIO DEBORA REGINA', '610 - ESPORTE - PARQUE MUNICIPAL DO PQ SANTANA', '611 - EDUCAÇÃO - COLÉGIO CHÁCARA DO SOLAR II', '612 - SAÚDE - CCC FERNÃO DIAS (COVID-19)', '613 - ESPORTE - COMPLEXO AQUATICO FAZENDINHA', '614 - ESPORTE - COMPLEXO AQUATICO COLINAS', '615 - SEMEDES - CENTRO DE STARTUPS INOVA PARNAIBA', '618 - CASA CIVIL - DEPARTAMENTO ADMINISTRATIVO DO CAB', '620 - SAÚDE - SETOR DE TRANSPORTE', '621 - OPERAÇÕES URBANAS - TERMINAL RODOVIARIO FAZENDINHA', '622 - SAÚDE - UBS DRA KATIA KOHLER (CHACARA SOLAR)', '623 - OPERAÇÕES URBANAS - TERMINAL RODOVIARIO ALPHAVILLE', '624 - CULTURA - CENTRO DE CONVENÇÕES', '625 - ESPORTE - SECRETARIA - COMPLEXO ESPORTIVO CENTRAL', '626 - TRANSPORTE E TRÂNSITO - DEPTO OPERACIONAL FAZENDINHA', '627 - ESPORTE - COMPLEXO AQUATICO SÃO PEDRO', '628 -  DESENVOLVIMENTO SOCIAL - CCCA VILA ESPERANÇA', '630 - ESPORTE -  ARENA DE ESPORTES', '633 - ESPORTE - PARQUE MUNICIPAL DO CRISTAL PARK', '634 - SEMEDES - POUPATEMPO', '636 - EDUCAÇÃO - COLÉGIO FABIO PONSO', '637 - EDUCAÇÃO - COLÉGIO PROFa ELISETE APARECIDA DE SOUZA', '638 - EDUCAÇÃO - COLÉGIO PROF. MAXSOEL ELIAS SANTANA (CRECHE ALPHAVILLE)', '639 - CULTURA - CCAM COLINAS', '640 - ESPORTE - PARQUE MUNICIPAL DO ITAPUÃ', '641 - EDUCAÇÃO - NÚCLEO DE TEC. EDUCACIONAL E INOVAÇÃO', '642 - CASA CIVIL - SETOR DE ATENDIMENTO AO PÚBLICO', '643 - CASA CIVIL - FÓRUM DE PIRAPORA DO BOM JESUS', '645 - CASA CIVIL - CAIXA DE PREVIDÊNCIA', '646 - ESPORTE - PARQUE MUNICIPAL DO REFÚGIO', '647 - SMTI - SÃO MIGUEL ARCANJO', '648 - SECRETARIA DA MULHER - CASA DE ACOLHIMENTO DA MULHER (EPAM)', '649 - OPERAÇÕES URBANAS - ALPHAVILLE-TAMBORÉ - ADMINISTRATIVO', '650 - DESENVOLVIMENTO SOCIAL  -  CRAS JAGUARI', '651 - MEIO AMBIENTE E PLANEJAMENTO - CANIL - CASAA', '652 - ESPORTE - COMPLEXO ESPORTIVO DO IMIDEO NERICI', '653 - ESPORTE - COMPLEXO ESPORTIVO  MAXSOEL ELIAS SANTANA', '655 - CULTURA - ESPAÇO CULTURAL MÁRIO DE ANDRADE', '658 - EDUCAÇÃO - ESPORTE EDUCACIONAL', '659 - SECRETARIA DA MULHER - NUCLÉO FAZENDINHA', '660 - SECRETARIA DA MULHER - NUCLÉO CENTRO', '661 - SAÚDE - NOVO HOSPITAL SANTANA', '662 - CÂMARA - SANTANA DE PARNAIBA', '663 - DESENVOLVIMENTO SOCIAL -  AGENDAMENTO SOCIAL II', '664 - SEG. URBANA - BASE NOVA', '665 - FINANÇAS - ATENDIMENTO E ARQUIVO GERAL DE FINANÇAS', '666 - ESPORTE - PARQUE DOS EUCALIPTOS', '68 - SEMEDES - SECRETARIA', '69 - EDUCAÇÃO - MERENDA', '7 - SEG. URBANA - GCM - QUARTEL', '72 - EDUCAÇÃO - COLÉGIO CIRANDA', '74 - DESENVOLVIMENTO SOCIAL  -  CASA ACOLHIM. MOINHO DE VENTO', '76 - SERVIÇOS MUNICIPAIS - SECRETARIA', '78 - EDUCAÇÃO - COLÉGIO PADRE ANACLETO', '80 - SAÚDE - CEFIS - CENTRO DE FISIOTERAPIA', '82 - EDUCAÇÃO - COLÉGIO DEP. ULISSES GUIMARAES', '83 - EDUCAÇÃO - COLÉGIO MARIA FERNANDES', '84 - EDUCAÇÃO - COLÉGIO SEBASTIÃO F. ATAYDE', '85 - EDUCAÇÃO - COLÉGIO BEIJA-FLOR', '87 - SEMEDES - ETEC ERMELINDA', '88 - EDUCAÇÃO - COLÉGIO AURELIO GIANINI TEIXEIRA', '89 - EDUCAÇÃO - COLÉGIO JOAO SANTANA', '90 - DESENVOLVIMENTO SOCIAL  -  CENTRO DE CONVIVÊNCIA DO IDOSO - 3ª IDADE', '95 - EDUCAÇÃO - COLÉGIO ALGODAO DOCE', '98 - SAÚDE - UBS LIMÉRIO CARDOSO BORCHAT (BAIRRO 120)'
+    ];
+
+    const setoresUnicos = [...new Set(setores)]; // Remover duplicatas
+    const selectElement = document.getElementById('sector');
+
+    setoresUnicos.forEach(function(setor) {
+        const option = document.createElement('option');
+        option.value = setor;
+        option.textContent = setor;
+        selectElement.appendChild(option);
+    });
+});
+
+
+</script>
+
+</body>
+</html>
